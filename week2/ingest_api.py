@@ -9,7 +9,7 @@ def load_data(path:str) -> pd.DataFrame:
 #--- Dataa cleaning functions ---
 
 def standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
-    df.columns = df.columns.str.lower()
+    df.columns = df.columns.str.lower().str.replace(" ", "_")
     return df
 
 def strip_whitespace(df: pd.DataFrame) -> pd.DataFrame:
@@ -117,23 +117,8 @@ def save_data(df: pd.DataFrame, path:str) ->None:
 def main() -> None:
     path = "week2/data/raw/netflix.csv"
     df = load_data(path)
-   # print("Shape:", df.shape)
-   # print("\n Columns: ", df.columns)
-   # print("\nFirst rows\n: ", df.head())
     df = clean_data(df)
-   # print(df.columns)
-   # print(df["type"].unique())
-   # print(df["country"].head(5))
-   # print("Missing values:\n", df.isnull().sum())
-   # print("Data types:\n", df.dtypes)
     df = transform_data(df)
-    print(df[["duration", "duration_value", "duration_unit"]].head(5))
-    print(df[["listed_in", "genres"]].head(5))
-    # Debug after the split 
-    print(df["genres"].iloc[1])
-    print(type(df["genres"].iloc[1]))
-    print(repr(df["genres"].iloc[1]))
-    print(df["is_movie"].head(5))
     save_data(df, "week2/data/processed/netflix_processed.csv")
 
 if __name__ == "__main__":
