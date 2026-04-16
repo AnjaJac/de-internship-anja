@@ -12,3 +12,5 @@ venv/
 
 # Jupyter
 .ipynb_checkpoints/
+#Data
+week2/data/
