@@ -1,5 +1,10 @@
 import pandas as pd 
 from pathlib import Path
+import logging 
+
+logging.basicConfig(level = logging.INFO)
+logger = logging.getLogger(__name__)
+
 # --- Data ingestion function --
 def load_data(path:str) -> pd.DataFrame:
     """Load CSV data into a DataFrame"""
@@ -33,8 +38,9 @@ def remove_duplicates(df: pd.DataFrame) ->pd.DataFrame:
         subset = "show_id", keep = "first"
     )
     after  = len(df)
-    print(f"Dropped {before - after} duplicate rows")
-    assert df["show_id"].is_unique, "Duplicate show_id found after dropping duplicates"
+    logger.info(f"Removed {before - after} duplicate rows based on show_id")
+    if not df["show_id"].is_unique:
+        raise ValueError("Duplicate show_id values found after removing duplicates")
     return df
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -48,7 +54,10 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 #--- Data transformation functions ---
 
 def extract_duration_value(df: pd.DataFrame) -> pd.DataFrame:
-    df["duration_value"] = df["duration"].str.extract(r"(\d+)")[0].astype("int64")
+    df["duration_value"] = pd.to_numeric(
+        df["duration"].str.extract(r"(\d+)")[0],
+        errors="coerce"
+    ).astype("Int64")
     return df
 
 def extract_duration_unit(df: pd.DataFrame) -> pd.DataFrame:
