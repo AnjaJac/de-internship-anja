@@ -1,0 +1,39 @@
+# Data Warehousing: OLTP vs OLAP
+
+## Why You Should NOT Run Analytics on a Production Database
+
+Running complex analytical queries directly on a live production database (OLTP) is a dangerous practice that can severely impact business operations. Separate systems (like an OLAP Data Warehouse) are strictly needed to ensure that heavy data analysis does not degrade the performance of the transactional system.
+
+**Impact of running analytical queries on an OLTP database:**
+* **System Slowdown:** Analytical queries often require scanning millions of rows and performing massive aggregations. This consumes significant CPU and memory, starving the primary transactional processes and causing severe latency for end-users.
+* **Table Locking:** Production databases use locks to maintain data integrity during transactions. Long-running analytical queries can hold read locks for extended periods, blocking write operations (inserts, updates, deletes) and causing transaction queues to pile up.
+* **Application Crashes:** In severe cases, the resource exhaustion caused by heavy analytics can crash the live application entirely, leading to system downtime, lost revenue, and disrupted user experience.
+* **Opposing Optimizations:** Production DBs are indexed and optimized for quick, single-row read/write operations. Analytics require entirely different optimization strategies (like column-oriented storage) to be efficient.
+
+---
+
+## OLAP vs. OLTP Comparison
+
+**Online Transaction Processing (OLTP)** systems are built to reliably and efficiently manage real-time transactional data in high volumes. 
+**Online Analytical Processing (OLAP)** systems are designed to combine, group, and analyze massive volumes of historical data from multiple sources (including OLTPs) to support business decision-making.
+
+| Criteria | OLTP (Online Transaction Processing) | OLAP (Online Analytical Processing) |
+| :--- | :--- | :--- |
+| **Purpose** | Manage and process real-time transactions. | Analyze large volumes of data to support decision-making. |
+| **Data Source** | Real-time and transactional data from a single source/application. | Historical and aggregated data from multiple sources. |
+| **Data Structure** | Relational databases (row-oriented). | Multidimensional (data cubes) or relational databases (columnar). |
+| **Data Model** | Normalized or denormalized models optimized for fast writes. | Star schema, snowflake schema, or other analytical models optimized for heavy reads. |
+| **Volume of Data** | Comparatively smaller storage requirements (Gigabytes - GB). | Massive storage requirements (Terabytes - TB to Petabytes - PB). |
+| **Response Time** | Extremely fast, typically in milliseconds. | Longer response times, typically in seconds or minutes. |
+| **Example Applications** | Processing payments, customer data management, order processing, inventory updates. | Analyzing trends, predicting customer behavior, identifying profitability, financial reporting. |
+
+---
+
+## Example Use Case: Large Retail Company
+
+To understand how these two systems work together in an ecosystem, consider a retail company operating hundreds of stores:
+
+* **OLTP (The Day-to-Day):** The company uses an OLTP system to process real-time store transactions. When a customer buys a product, the system instantly updates inventory levels, manages payment information, and tracks loyalty points. Each store connects to this central database, requiring millisecond response times so checkout lines keep moving.
+* **OLAP (The Big Picture):** Separately, the company's business analysts use an OLAP system to generate reports. They run complex queries across massive volumes of historical data (originally collected by the OLTP) to identify sales trends, customer demographics, and popular products over specific time periods. Because this happens in the OLAP environment, the intensive queries do not slow down the cash registers in the stores.
+week3/notes/week3.md
+Displaying week3/notes/week3.md.
