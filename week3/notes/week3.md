@@ -223,3 +223,42 @@ This alignment ensures the model is:
 - consistent  
 - scalable  
 - capable of supporting multiple analytical use cases  
+
+## Fact Table Grain
+
+### Definition of Grain
+
+The grain defines the level of detail represented by each row in the fact table. It must be explicitly defined before designing the schema.
+
+### Chosen Grain
+
+> Each row represents a single product within a customer order (one order item).
+
+### Why this grain was chosen
+
+This grain aligns with the core business questions and enables flexible analysis across multiple dimensions:
+
+- **Sales performance:**  
+  Allows aggregation of revenue by product and time  
+
+- **Customer behavior:**  
+  Enables tracking of purchases at the customer level  
+
+- **Product trends:**  
+  Supports analysis of quantity and revenue per product over time  
+
+- **Order behavior (AOV):**  
+  Enables calculation of average order value by grouping order items by order  
+
+### Key Implications
+
+- A single order with multiple products will generate multiple rows  
+- Revenue and quantity are recorded at the most detailed level  
+- All higher-level metrics (e.g., total revenue, AOV) are derived through aggregation  
+
+### Summary
+
+This grain provides the right balance between:
+- flexibility (supports many analytical queries)  
+- accuracy (captures detailed transactional behavior)  
+- scalability (can support future analytical needs)
