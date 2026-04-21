@@ -129,3 +129,14 @@ The **Grain** is the fundamental definition of what a single row in a fact table
 
 ### Example: "One row per order item"
 If a customer buys a loaf of bread and a carton of milk, this grain results in **two rows** in the fact table (one for each item), allowing for precise analysis of product-level trends.
+
+## Surrogate Keys
+
+### Definition
+A **Surrogate Key** is an internally generated, meaningless integer used as the Primary Key for a dimension table. It exists solely to identify a record within the data warehouse.
+
+### Why use them over Natural Keys?
+* **System Decoupling:** Protects the warehouse from changes or recycling of IDs in source systems. 
+* **Historical Tracking:** Essential for **Slowly Changing Dimensions**, allowing one natural entity to have multiple records representing different points in time. 
+* **Query Performance:** Joins on integers are much faster than joins on text-based natural keys. 
+* **Consolidation:** Easily handles overlapping natural keys when merging data from multiple sources. 
