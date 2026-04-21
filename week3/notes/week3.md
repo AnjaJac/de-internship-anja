@@ -323,3 +323,96 @@ This structure ensures:
 - flexibility in analysis  
 - consistency in metric calculation  
 - scalability for future analytical needs  
+## Dimension Tables Design
+
+### Overview
+
+Dimension tables provide descriptive context to the fact table. They contain attributes that allow data to be filtered, grouped, and analyzed across different perspectives such as product, customer, and time.
+
+---
+
+## Product Dimension (`dim_product`)
+
+### Keys
+- **product_key (PK):** Surrogate key used for joining with the fact table  
+- **product_id:** Business key from the source system  
+
+### Attributes
+- product_name  
+- category  
+- brand  
+
+### Slowly Changing Dimension (SCD)
+
+This dimension uses **SCD Type 2** to track historical changes.
+
+#### SCD Columns:
+- start_date  
+- end_date  
+- is_current  
+
+### Rationale
+
+Product attributes such as category or brand may change over time. Using SCD Type 2 ensures that historical data remains accurate and reflects the correct product classification at the time of each transaction.
+
+---
+
+## Customer Dimension (`dim_customer`)
+
+### Keys
+- **customer_key (PK):** Surrogate key  
+- **customer_id:** Business key  
+
+### Attributes
+- city  
+- country  
+- account_created_date  
+- birth_date  
+- status  
+- customer_segment  
+
+### Slowly Changing Dimension (SCD)
+
+This dimension also uses **SCD Type 2**.
+
+#### SCD Columns:
+- start_date  
+- end_date  
+- is_current  
+
+### Rationale
+
+Customer attributes such as location, segment, and status can change over time and are important for analysis. SCD Type 2 allows tracking these changes while preserving historical accuracy.
+
+---
+
+## Date Dimension (`dim_date`)
+
+### Keys
+- **date_key (PK):** Surrogate key (often in YYYYMMDD format)
+
+### Attributes
+- full_date  
+- day  
+- month  
+- year  
+- quarter  
+- day_of_week  
+- day_name  
+- is_weekend  
+
+### Characteristics
+
+- Pre-generated for a fixed range of dates  
+- Does not require SCD handling  
+- Provides a consistent structure for time-based analysis  
+
+### Rationale
+
+The date dimension enables efficient grouping and filtering by time periods such as days, months, and quarters. Pre-generating this table ensures completeness and avoids gaps in analysis.
+
+---
+
+## Star Schema Summary
+
+The `fact_sales` table captures transactional data at the grain of one order item and connects to the `dim_customer`, `dim_product`, and `dim_date` tables via surrogate keys (`customer_key`, `product_key`, `date_key`), while storing measurable metrics such as quantity, unit_price, and revenue to support analytical queries.
