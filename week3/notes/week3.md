@@ -57,19 +57,19 @@ It sits at the **center of a star schema**, surrounded by dimension tables.
 #### Foreign Keys (FK)
 - Columns that link the fact table to dimension tables  
 - Example: `product_key`, `date_key`, `customer_key`  
-- Enable joining with dimensions 🔑
+- Enable joining with dimensions 
 
 #### Measures (Facts)
 - Quantitative, numeric values  
 - Can be aggregated (SUM, AVG, COUNT)  
 - Answer questions like:
   - "How much?"
-  - "How many?" 🔢
+  - "How many?" 
 
 #### Degenerate Dimensions
 - Identifiers stored directly in the fact table  
 - No corresponding dimension table  
-- Example: `order_id`, `invoice_number` 📄
+- Example: `order_id`, `invoice_number` 
 
 ---
 
@@ -77,22 +77,22 @@ It sits at the **center of a star schema**, surrounded by dimension tables.
 
 #### Additive Facts
 - Can be summed across all dimensions  
-- Example: total sales amount 💰
+- Example: total sales amount 
 
 #### Semi-Additive Facts
 - Can be summed across some dimensions, but not all  
 - Typically **not additive over time**  
-- Example: account balance 🏦
+- Example: account balance 
 
 #### Non-Additive Facts
 - Cannot be meaningfully summed  
 - Usually ratios or percentages  
-- Example: profit margin %, unit price 📈
+- Example: profit margin %, unit price 
 
 #### Factless Fact Tables
 - Contain only foreign keys (no numeric measures)  
 - Used to track event occurrence  
-- Example: student attendance 🙋‍♂️
+- Example: student attendance 
 
 ---
 
@@ -101,3 +101,18 @@ It sits at the **center of a star schema**, surrounded by dimension tables.
 - Fact tables capture **events**, not descriptions  
 - They are designed for **analysis and aggregation**  
 - Always tied to a defined **grain** (level of detail)
+
+## Dimension Tables
+
+### Definition
+A **Dimension Table** provides the "context" or the "who, what, where, when, and why" of a business process. While the fact table contains the numbers, the dimension tables contain the descriptive text that allows us to filter, group, and label those numbers in a report.
+
+### Content and Attributes
+* **Primary Key (PK):** A unique identifier for each row (usually a **Surrogate Key**, which is a simple integer). 
+* **Attributes:** Textual fields that describe the dimension (e.g., `Product Name`, `Color`, `Size`). These are often verbose and used as headers in reports. 
+* **Hierarchies:** Attributes that represent levels of a category, like `City > State > Country`. 
+
+### Example: Product Dimension
+| Product_SK (PK) | SKU | Product Name | Category | Brand | Color |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 501 | CR-99 | Mountain Bike | Sports | Trek | Blue |
