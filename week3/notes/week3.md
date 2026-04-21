@@ -140,3 +140,86 @@ A **Surrogate Key** is an internally generated, meaningless integer used as the 
 * **Historical Tracking:** Essential for **Slowly Changing Dimensions**, allowing one natural entity to have multiple records representing different points in time. 
 * **Query Performance:** Joins on integers are much faster than joins on text-based natural keys. 
 * **Consolidation:** Easily handles overlapping natural keys when merging data from multiple sources. 
+
+## E-commerce Scenario Definition
+
+### Scenario Description
+
+We model an e-commerce business that sells products across multiple categories. Customers place orders, and each order can contain one or more products.  
+
+The goal of this data model is to support **analytical queries** related to:
+- sales performance
+- customer behavior
+- product trends  
+
+This model will be used in an OLAP/data warehouse context, not for transactional operations.
+
+---
+
+### Core Business Questions
+
+To design an effective data model, we first define the key business questions the system must answer.
+
+#### 1. Sales Performance
+**Question:**  
+How much revenue do we generate per day per product?
+
+**Why this matters:**  
+This question enables tracking overall business performance over time and identifies which products contribute the most to revenue. It introduces the need for:
+- a time dimension
+- a product dimension
+- an aggregatable revenue metric  
+
+---
+
+#### 2. Customer Behavior
+**Question:**  
+What is the total revenue and number of orders per customer?
+
+**Why this matters:**  
+This allows the business to evaluate customer value and identify high-value customers. It introduces:
+- a customer dimension  
+- the need to aggregate both revenue and order counts  
+
+---
+
+#### 3. Product Trends
+**Question:**  
+Which products sell the most (by quantity and revenue) over time?
+
+**Why this matters:**  
+This supports trend analysis and inventory/business decisions. It reinforces:
+- product-level analysis  
+- time-based aggregation  
+- use of both quantity and revenue measures  
+
+---
+
+#### 4. Order Behavior (AOV)
+**Question:**  
+What is the average order value (AOV) over time?
+
+**Why this matters:**  
+This introduces order-level analysis and helps measure purchasing patterns. It requires:
+- tracking order identifiers  
+- calculating derived metrics (revenue / number of orders)  
+- understanding customer purchasing behavior  
+
+---
+
+### Modeling Insight
+
+Although these questions cover different perspectives, they all revolve around a single core business event:
+
+> A customer purchasing a product.
+
+This insight allows us to design a **single fact table** that can answer all questions by combining:
+- product data  
+- customer data  
+- time data  
+- order-level information  
+
+This alignment ensures the model is:
+- consistent  
+- scalable  
+- capable of supporting multiple analytical use cases  
