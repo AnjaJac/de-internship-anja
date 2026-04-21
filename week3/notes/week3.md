@@ -37,3 +37,67 @@ To understand how these two systems work together in an ecosystem, consider a re
 * **OLAP (The Big Picture):** Separately, the company's business analysts use an OLAP system to generate reports. They run complex queries across massive volumes of historical data (originally collected by the OLTP) to identify sales trends, customer demographics, and popular products over specific time periods. Because this happens in the OLAP environment, the intensive queries do not slow down the cash registers in the stores.
 week3/notes/week3.md
 Displaying week3/notes/week3.md.
+
+## Fact Tables
+
+### Definition
+A Fact Table is the primary table in a dimensional model where the numerical performance measurements of a business process are stored.  
+
+It represents a **"verb" or event**, such as:
+- a sale
+- a login
+- a temperature reading  
+
+It sits at the **center of a star schema**, surrounded by dimension tables.
+
+---
+
+### Content and Measures
+
+#### Foreign Keys (FK)
+- Columns that link the fact table to dimension tables  
+- Example: `product_key`, `date_key`, `customer_key`  
+- Enable joining with dimensions 🔑
+
+#### Measures (Facts)
+- Quantitative, numeric values  
+- Can be aggregated (SUM, AVG, COUNT)  
+- Answer questions like:
+  - "How much?"
+  - "How many?" 🔢
+
+#### Degenerate Dimensions
+- Identifiers stored directly in the fact table  
+- No corresponding dimension table  
+- Example: `order_id`, `invoice_number` 📄
+
+---
+
+### Common Fact Types
+
+#### Additive Facts
+- Can be summed across all dimensions  
+- Example: total sales amount 💰
+
+#### Semi-Additive Facts
+- Can be summed across some dimensions, but not all  
+- Typically **not additive over time**  
+- Example: account balance 🏦
+
+#### Non-Additive Facts
+- Cannot be meaningfully summed  
+- Usually ratios or percentages  
+- Example: profit margin %, unit price 📈
+
+#### Factless Fact Tables
+- Contain only foreign keys (no numeric measures)  
+- Used to track event occurrence  
+- Example: student attendance 🙋‍♂️
+
+---
+
+### Notes / Understanding
+
+- Fact tables capture **events**, not descriptions  
+- They are designed for **analysis and aggregation**  
+- Always tied to a defined **grain** (level of detail)
