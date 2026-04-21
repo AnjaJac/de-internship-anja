@@ -262,3 +262,64 @@ This grain provides the right balance between:
 - flexibility (supports many analytical queries)  
 - accuracy (captures detailed transactional behavior)  
 - scalability (can support future analytical needs)
+
+# E-commerce Star Schema Design
+
+## Fact Table: Sales
+
+## Fact Table Columns
+
+### Foreign Keys
+
+#### product_key
+- Links to the product dimension  
+- Identifies which product was purchased  
+
+#### customer_key
+- Links to the customer dimension  
+- Identifies who made the purchase  
+
+#### date_key
+- Links to the date dimension  
+- Enables time-based analysis (day, month, year)  
+
+---
+
+### Degenerate Dimension
+
+#### order_id
+- Identifies the order to which the order item belongs  
+- Stored directly in the fact table (no separate dimension)  
+- Enables grouping of items into orders  
+- Required for calculating metrics such as Average Order Value (AOV)  
+
+---
+
+### Measures
+
+#### quantity
+- Number of units purchased for the given product  
+- Used for analyzing product demand and sales volume  
+
+#### unit_price
+- Price per unit of the product at the time of purchase  
+- Useful for validation, debugging, and detailed pricing analysis  
+
+#### revenue
+- Total value of the order item (quantity × unit_price)  
+- Primary metric used for revenue analysis  
+
+---
+
+## Design Rationale
+
+The selected columns are derived directly from the defined business questions and grain:
+
+- Foreign keys enable analysis across product, customer, and time dimensions  
+- The degenerate dimension (order_id) supports order-level calculations  
+- Measures allow aggregation into key metrics such as total revenue, product performance, and average order value  
+
+This structure ensures:
+- flexibility in analysis  
+- consistency in metric calculation  
+- scalability for future analytical needs  
