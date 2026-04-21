@@ -116,3 +116,16 @@ A **Dimension Table** provides the "context" or the "who, what, where, when, and
 | Product_SK (PK) | SKU | Product Name | Category | Brand | Color |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | 501 | CR-99 | Mountain Bike | Sports | Trek | Blue |
+
+## Grain (Crucial Concept)
+
+### Definition
+The **Grain** is the fundamental definition of what a single row in a fact table represents. It is the level of detail at which the data is captured. You must "declare the grain" before you define your dimensions or facts.
+
+### Importance
+* **Consistency:** Every measurement in the table is at the same level of detail. 
+* **Accuracy:** Prevents double-counting during data aggregation. 
+* **Dimension Selection:** Directly dictates which dimensions can be associated with the fact table. 
+
+### Example: "One row per order item"
+If a customer buys a loaf of bread and a carton of milk, this grain results in **two rows** in the fact table (one for each item), allowing for precise analysis of product-level trends.
