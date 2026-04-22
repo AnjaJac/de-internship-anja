@@ -416,3 +416,162 @@ The date dimension enables efficient grouping and filtering by time periods such
 ## Star Schema Summary
 
 The `fact_sales` table captures transactional data at the grain of one order item and connects to the `dim_customer`, `dim_product`, and `dim_date` tables via surrogate keys (`customer_key`, `product_key`, `date_key`), while storing measurable metrics such as quantity, unit_price, and revenue to support analytical queries.
+
+## Medallion Architecture Mapping
+
+### Overview
+
+The medallion architecture organizes data into three layers:
+- Bronze (raw data)
+- Silver (cleaned and transformed data)
+- Gold (analytics-ready data)
+
+This structure improves data quality, scalability, and maintainability by separating data processing stages.
+
+---
+
+### Bronze Layer (Raw Data)
+
+The Bronze layer contains raw, ingested data from source systems with minimal or no transformation.
+
+Examples:
+- raw_orders  
+- raw_customers  
+- raw_products  
+
+Characteristics:
+- Data stored as-is  
+- May contain duplicates, nulls, and inconsistencies  
+- Serves as the source of truth  
+
+---
+
+### Silver Layer (Cleaned & Transformed Data)
+
+The Silver layer contains cleaned, standardized, and validated data.
+
+Transformations include:
+- Removing duplicates  
+- Handling missing values  
+- Standardizing formats (dates, text, etc.)  
+- Applying basic business rules  
+
+Examples:
+- cleaned_orders  
+- cleaned_customers  
+- cleaned_products  
+
+This layer ensures data consistency before analytical modeling.
+
+---
+
+### Gold Layer (Analytics Layer)
+
+The Gold layer contains curated, business-ready data models optimized for analytics.
+
+#### Star Schema
+
+The core of the Gold layer is the star schema:
+- `fact_sales`
+- `dim_product`
+- `dim_customer`
+- `dim_date`
+
+This structure enables efficient analytical queries and reporting.
+
+---
+
+#### Date Dimension Generation
+
+The `dim_date` table is not derived from transactional data but generated using a script or tool.
+
+This ensures:
+- complete timeline coverage (including days with no transactions)  
+- consistent time-based analysis  
+- precomputed attributes (day, month, quarter, weekday)  
+
+---
+
+#### Aggregated Tables (Performance Optimization)
+
+To improve query performance on large datasets, aggregated tables can be introduced.
+
+Example: `fact_sales_daily`
+
+Grain:
+> One row per product per day
+
+Columns:
+- date_key  
+- product_key  
+- total_quantity  
+- total_revenue  
+
+Benefits:
+- faster query performance  
+- reduced data volume  
+
+Trade-off:
+- loss of detailed granularity  
+- cannot analyze individual transactions  
+
+---
+
+### Mapping Summary
+
+- Bronze → raw e-commerce data (orders, customers, products)  
+- Silver → cleaned and standardized datasets  
+- Gold → star schema (`fact_sales`, dimensions) and aggregated tables  
+
+The Gold layer is optimized for read-heavy analytical workloads and supports BI tools and dashboards.
+
+#### Implementation: Data Population and Aggregation
+
+In addition to defining the schema, transformation logic was implemented to populate and optimize the analytical model.
+
+##### Date Dimension Population
+
+The `dim_date` table was populated using a SQL-based date generator (`generate_series`). This approach ensures a complete and continuous timeline, independent of transactional data.
+
+The process:
+- generates a range of dates (2020–2030)
+- derives all required attributes (day, month, year, quarter, weekday)
+- assigns a surrogate key in `YYYYMMDD` format
+
+This guarantees:
+- no missing dates in analysis
+- consistent time-based aggregations
+- simplified query logic for reporting
+
+---
+
+##### Aggregated Table: `fact_sales_daily`
+
+An additional aggregated table was created to improve query performance on large datasets.
+
+Grain:
+> One row per product per day
+
+This table summarizes transactional data from `fact_sales` by:
+- `date_key`
+- `product_key`
+
+Measures:
+- `total_quantity`
+- `total_revenue`
+
+Purpose:
+- reduce the volume of data scanned during analytical queries
+- enable faster dashboard performance
+- support high-level trend analysis
+
+---
+
+##### Trade-offs
+
+While aggregated tables improve performance, they reduce the level of detail available.
+
+- Faster queries due to fewer rows  
+- Loss of ability to analyze individual transactions  
+
+This reflects a common trade-off in data warehousing between performance and granularity.
