@@ -1,5 +1,16 @@
-/*
-   DATE DIMENSION POPULATION
+/* 
+   TRANSFORMATIONS AND DATA POPULATION
+ */
+
+/* 
+This script performs:
+1. Safe data refresh for dependent tables
+2. Date dimension population
+3. Aggregated table creation
+
+Important:
+fact_sales depends on dim_date via foreign key.
+We must handle truncation in correct dependency order.
 */
 
 /* 
@@ -9,8 +20,18 @@ Then we truncate dim_date safely.
 TRUNCATE TABLE ecommerce.fact_sales;
 TRUNCATE TABLE ecommerce.dim_date;
 
+/* 
+CASCADE could be used, but explicit order is clearer and safer.
+*/
 
-/* Populate dim_date with a range of dates */
+/* 
+   DATE DIMENSION POPULATION
+*/
+/* 
+Populate dim_date using generate_series.
+This creates a continuous range of dates independent of transactional data.
+*/
+
 INSERT INTO ecommerce.dim_date (
     date_key,
     full_date,
@@ -23,8 +44,8 @@ INSERT INTO ecommerce.dim_date (
     is_weekend
 )
 SELECT
-    TO_CHAR(d, 'YYYYMMDD')::INTEGER AS date_key,
-    d AS full_date,
+    TO_CHAR(d, 'YYYYMMDD')::INTEGER,
+    d,
     EXTRACT(DAY FROM d),
     EXTRACT(MONTH FROM d),
     EXTRACT(YEAR FROM d),
@@ -41,17 +62,18 @@ FROM generate_series(
     INTERVAL '1 day'
 ) AS d;
 
-
+/* 
+   AGGREGATED TABLE CREATION
+*/
 
 /* 
-   AGGREGATED TABLE: DAILY PRODUCT SALES
- */
+We recreate the aggregated table each run to ensure consistency.
+This table summarizes data at grain:
+one row per product per day.
+*/
 
-/* Drop table if it exists (safe re-run) */
 DROP TABLE IF EXISTS ecommerce.fact_sales_daily;
 
-/* Create aggregated table at grain:
-   one row per product per day */
 CREATE TABLE ecommerce.fact_sales_daily AS
 SELECT
     date_key,
@@ -61,11 +83,13 @@ SELECT
 FROM ecommerce.fact_sales
 GROUP BY date_key, product_key;
 
-
+/* 
+   PERFORMANCE OPTIMIZATION
+ */
 
 /* 
-   INDEX FOR PERFORMANCE
- */
+Index improves query performance on common filters and joins.
+*/
 
 CREATE INDEX idx_fact_sales_daily
 ON ecommerce.fact_sales_daily (date_key, product_key);
