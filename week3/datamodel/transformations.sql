@@ -2,8 +2,13 @@
    DATE DIMENSION POPULATION
 */
 
-/* Clear existing data to avoid duplicates */
+/* 
+We truncate fact table first because it references dimension tables.
+Then we truncate dim_date safely.
+*/
+TRUNCATE TABLE ecommerce.fact_sales;
 TRUNCATE TABLE ecommerce.dim_date;
+
 
 /* Populate dim_date with a range of dates */
 INSERT INTO ecommerce.dim_date (
