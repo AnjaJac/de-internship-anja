@@ -12,5 +12,11 @@ venv/
 
 # Jupyter
 .ipynb_checkpoints/
-#Data
+# Data files
+*.csv
+*.json
+*.parquet
+
+# Data folders
+data/
 week2/data/
