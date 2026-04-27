@@ -148,3 +148,119 @@ Designed and implemented a data warehouse model for an e-commerce scenario using
 - Star schema simplifies analytical queries  
 - SCD Type 2 preserves historical accuracy  
 - Aggregations improve performance but reduce detail  
+
+##  Week 4 — Apache Spark & Databricks
+
+###  Setup
+
+- Created a Databricks Free Edition account  
+- Set up workspace and explored the UI  
+- Used serverless compute for running notebooks  
+- Created a structured environment using:
+  - Catalog  
+  - Schema  
+  - Volume (for file storage)  
+
+---
+
+###  What was done
+
+####  Data Processing
+- Loaded dataset using `spark.read.csv`
+- Performed transformations using PySpark:
+  - `filter`, `select`, `groupBy`, `agg`
+- Created derived columns (feature engineering)
+
+---
+
+####  Advanced Transformations
+- Implemented window functions:
+  - ranking (`rank`)
+  - aggregations over partitions
+
+---
+
+####  Spark SQL
+- Created temporary views  
+- Rewrote DataFrame logic using SQL  
+- Demonstrated equivalence between PySpark and Spark SQL  
+
+---
+
+####  Legacy Migration
+- Rewrote traditional SQL queries (from Week 1) into Spark SQL  
+- Executed them in a distributed environment  
+
+---
+
+####  File Formats & Storage
+- Worked with:
+  - CSV (raw ingestion)
+  - JSON (semi-structured format)
+  - Parquet (columnar, optimized)
+- Compared performance across formats  
+
+---
+
+####  Delta Lake
+- Created Delta tables  
+- Demonstrated:
+  - ACID transactions  
+  - Time travel (versioning)  
+- Performed updates and queried previous versions  
+
+---
+
+####  Partitioning
+- Partitioned data by `day`  
+- Verified partition structure  
+- Demonstrated partition pruning  
+
+---
+
+####  Performance Analysis
+- Compared execution time:
+  - CSV vs JSON vs Parquet  
+- Observed Parquet as the most efficient format  
+
+---
+
+####  Spark UI & Execution
+- Used Query Profile (Spark UI equivalent)  
+- Analyzed:
+  - DAG (Directed Acyclic Graph)
+  - stages and tasks  
+- Identified shuffle during `GROUP BY` operations  
+
+---
+
+####  Core Concepts Learned
+- Transformations vs Actions  
+- Lazy Evaluation  
+- DAG execution model  
+- Shuffle and its cost  
+- Distributed processing (Driver vs Executors)  
+
+---
+
+###  Project Structure
+week4/
+├── notebooks/
+└── notes/
+
+
+---
+
+### Dataset Note
+
+The dataset used in this project is **not included in the repository**.
+
+This follows best practices:
+- datasets can be large  
+- data is often external  
+- repositories should focus on code and logic  
+
+To reproduce the project:
+1. Use a similar dataset (e.g., tips or sales dataset)
+2. Upload it to Databricks
+3. Update file paths in notebooks
