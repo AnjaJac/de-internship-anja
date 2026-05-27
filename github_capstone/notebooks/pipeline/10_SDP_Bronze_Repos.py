@@ -35,8 +35,8 @@ from pyspark.sql.functions import current_timestamp, struct, to_date, col
 # COMMAND ----------
 
 # Configuration parameters for raw data ingestion
-RAW_REPOS_PATH = "/Volumes/workspace/gh_dev/raw/repos/"
-SCHEMA_LOCATION = "/Volumes/workspace/gh_dev/schemas/bronze_repos/"
+RAW_REPOS_PATH = spark.conf.get("raw_repos_path")
+SCHEMA_LOCATION = spark.conf.get("bronze_repos_schema_path")
 CLOUDFILES_FORMAT = "json"
 
 # COMMAND ----------

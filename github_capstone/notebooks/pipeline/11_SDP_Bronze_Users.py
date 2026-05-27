@@ -38,8 +38,8 @@ from pyspark.sql.functions import col, current_timestamp, struct, to_date
 # COMMAND ----------
 
 # Configuration parameters for raw user snapshot ingestion
-RAW_USERS_PATH = "/Volumes/workspace/gh_dev/raw/users/"
-SCHEMA_LOCATION = "/Volumes/workspace/gh_dev/schemas/bronze_users/"
+RAW_USERS_PATH = spark.conf.get("raw_users_path")
+SCHEMA_LOCATION = spark.conf.get("bronze_users_schema_path")
 CLOUDFILES_FORMAT = "json"
 MAX_FILES_PER_TRIGGER = "100"
 

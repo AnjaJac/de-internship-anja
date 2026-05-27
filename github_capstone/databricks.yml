@@ -31,36 +31,43 @@ resources:
             - task_key: ingest_repos
           notebook_task:
             notebook_path: ./notebooks/09_Ingestion_Users.py
+        - task_key: run_medallion_pipeline
+          depends_on:
+            - task_key: ingest_users
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.gh_sdp_medallion.id}
 
   pipelines:
     gh_sdp_medallion:
       name: gh_sdp_medallion
       catalog: workspace
-      schema: gh_dev
+      schema: gh_dev_bundle
 
       serverless: true
       development: true
 
-      photon: true
 
       channel: CURRENT
 
       libraries:
         # Core medallion pipeline
+        # Bronze layer
         - notebook:
             path: ./notebooks/pipeline/02_SDP_Bronze.py
         - notebook:
-            path: ./notebooks/pipeline/03_SDP_Silver.py
-        - notebook:
-            path: ./notebooks/pipeline/04_SDP_Gold.py
-        - notebook:
             path: ./notebooks/pipeline/10_SDP_Bronze_Repos.py
+        - notebook:
+            path: ./notebooks/pipeline/11_SDP_Bronze_Users.py
+        # Silver layer    
+        - notebook:
+            path: ./notebooks/pipeline/03_SDP_Silver.py
         - notebook:
             path: ./notebooks/pipeline/12_SDP_Silver_Repos.py
         - notebook:
-            path: ./notebooks/pipeline/11_SDP_Bronze_Users.py
-        - notebook:
             path: ./notebooks/pipeline/13_SDP_Silver_Users.py
+        # Gold layer
+        - notebook:
+            path: ./notebooks/pipeline/04_SDP_Gold.py
         # Final enriched gold layer
         - notebook:
             path: ./notebooks/pipeline/14_SDP_Gold_Enriched.py
