@@ -339,4 +339,4 @@ Databricks Free Edition constraints.
 - The project demonstrates production architectural concepts despite environment
   constraints.
 
-**Trade-off:** Some production-scale optimizations are intentionally deferred.
+**Trade-off:** Some production-scale optimizations are intentionally deferred.# workflow dispatch enabled
