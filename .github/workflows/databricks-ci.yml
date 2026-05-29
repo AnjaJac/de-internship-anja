@@ -13,6 +13,9 @@ on:
       - main
     paths:
       - "github_capstone/**"
+  
+  workflow_dispatch:
+    
 
 jobs:
   validate:
