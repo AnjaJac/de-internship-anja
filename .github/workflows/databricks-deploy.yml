@@ -3,6 +3,10 @@ name: Databricks Deploy
 on:
   workflow_dispatch:
 
+  push: 
+    branches:
+      - "feature/github_capstone"
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
