@@ -360,7 +360,6 @@ Repository enrichment captures:
 - forks
 - open issues
 - repository creation timestamp
-
 ### User Enrichment
 
 The user enrichment workflow:
