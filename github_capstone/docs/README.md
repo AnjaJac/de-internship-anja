@@ -426,3 +426,64 @@ The completed platform demonstrates:
 | GitHub REST API | Source and enrichment data |
 | Databricks Workflows | Orchestration |
 | SQL | Analytical and validation queries |
+
+## CI/CD Implementation
+
+This project includes a Continuous Integration (CI) pipeline implemented with GitHub Actions.
+
+### CI Workflow
+
+The workflow is defined in:
+
+```plaintext
+.github/workflows/databricks-ci.yml
+```
+
+The pipeline is triggered on:
+
+* Pushes to feature branches
+* Pull requests targeting `main`
+* Manual execution through `workflow_dispatch`
+
+The CI pipeline performs the following steps:
+
+1. Checkout repository source code
+2. Configure Python 3.11 environment
+3. Install project dependencies
+4. Install Databricks CLI
+5. Validate the Databricks Asset Bundle
+6. Execute automated tests
+
+### Automated Tests
+
+The project contains automated validation tests covering:
+
+* Databricks bundle configuration
+* Job and pipeline resource definitions
+* Notebook path validation
+* Bundle resource references
+
+Current test coverage includes:
+
+```plaintext
+tests/test_bundle_config.py
+tests/test_bundle_references.py
+tests/test_notebook_paths.py
+tests/test_pipeline_structure.py
+```
+
+Total automated tests:
+
+```plaintext
+11
+```
+
+### Deployment Strategy
+
+Bundle deployment is performed manually from the local development environment using OAuth authentication:
+
+```bash
+databricks bundle deploy --target dev
+```
+
+Deployment through GitHub Actions was investigated but is not supported in the Databricks Free Edition environment due to account-level authentication limitations. Additional details are documented in `docs/decisions/0001-free-edition-cicd-limitations.md`.

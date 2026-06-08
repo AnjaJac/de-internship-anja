@@ -340,3 +340,139 @@ Databricks Free Edition constraints.
   constraints.
 
 **Trade-off:** Some production-scale optimizations are intentionally deferred.# workflow dispatch enabled
+
+## Decision: Deployment Strategy for Databricks Free Edition
+
+### Status
+
+Accepted
+
+### Context
+
+As part of the project, a Continuous Deployment workflow was implemented using GitHub Actions. The goal was to automate Databricks Asset Bundle deployment using:
+
+```bash
+databricks bundle deploy --target dev
+```
+
+and optionally execute the deployed job using:
+
+```bash
+databricks bundle run gh_pipeline_job --target dev
+```
+
+The workflow was successfully created, configured, and executed within GitHub Actions.
+
+### Investigation
+
+Deployment failed during execution despite successful authentication and bundle validation.
+
+Initial errors suggested insufficient token permissions. After updating token scopes and reconfiguring GitHub Secrets, the error changed and was isolated to a user identity lookup performed during deployment.
+
+The failing endpoint was:
+
+```text
+/api/2.0/preview/scim/v2/Me
+```
+
+To determine whether the problem originated from GitHub Actions, Databricks Asset Bundles, or authentication, several tests were performed.
+
+#### Test 1 - Bundle Validation
+
+```bash
+databricks bundle validate
+```
+
+Result:
+
+Success.
+
+Conclusion:
+
+Bundle configuration was valid.
+
+#### Test 2 - Local Deployment Using OAuth Authentication
+
+```bash
+databricks auth login
+databricks bundle deploy --target dev
+```
+
+Result:
+
+Success.
+
+Conclusion:
+
+Deployment logic and workspace configuration were valid.
+
+#### Test 3 - PAT Authentication
+
+Environment variables were configured using the same PAT stored in GitHub Secrets.
+
+```bash
+export DATABRICKS_HOST=<workspace>
+export DATABRICKS_TOKEN=<PAT>
+```
+
+User lookup was tested using:
+
+```bash
+databricks current-user me
+```
+
+Result:
+
+Authentication failed with:
+
+```text
+Credential was not sent or was of an unsupported type for this API
+```
+
+The same error appeared in GitHub Actions.
+
+Conclusion:
+
+The issue was reproduced outside GitHub Actions and therefore was not caused by workflow configuration.
+
+### Findings
+
+The investigation demonstrated the following:
+
+| Authentication Method | Bundle Validate | Bundle Deploy |
+| --------------------- | --------------- | ------------- |
+| OAuth Login           | Success         | Success       |
+| PAT Authentication    | Success         | Failure       |
+
+The failure occurs during account-level identity resolution required by Databricks Asset Bundle deployment.
+
+Databricks Free Edition does not support the account-level functionality required for Service Principals, SCIM identity APIs, or OIDC-based automation.
+
+### Decision
+
+The GitHub Actions deployment workflow was removed from the project.
+
+Continuous Integration remains fully implemented through:
+
+* Databricks Bundle Validation
+* Automated pytest execution
+* GitHub Actions workflow automation
+
+Deployment will be performed manually from the local development environment using OAuth authentication.
+
+### Consequences
+
+Benefits:
+
+* Reliable deployment process
+* Full compatibility with Databricks Free Edition
+* Stable CI pipeline
+
+Trade-offs:
+
+* Deployment is not fully automated
+* Deployment requires a locally authenticated user session
+
+### Future Considerations
+
+If the project is migrated to a Standard, Premium, or Enterprise Databricks environment, deployment automation should be revisited using Service Principals and OIDC authentication.
