@@ -1,0 +1,82 @@
+# This is a Databricks asset bundle definition for github_capstone.
+# The Databricks extension requires databricks.yml configuration file.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+
+bundle:
+  name: github_capstone
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-d48aa1b5-36da.cloud.databricks.com
+
+resources:
+  jobs:
+    gh_pipeline_job:
+      name: gh_pipeline_job
+
+      tasks:
+        - task_key: ingest_api
+          notebook_task:
+            notebook_path: ./notebooks/01_Ingestion_Job.py
+        - task_key: ingest_repos
+          depends_on:
+            - task_key: ingest_api
+          notebook_task:
+            notebook_path: ./notebooks/08_Ingestion_Repos.py
+        - task_key: ingest_users
+          depends_on:
+            - task_key: ingest_repos
+          notebook_task:
+            notebook_path: ./notebooks/09_Ingestion_Users.py
+        - task_key: run_medallion_pipeline
+          depends_on:
+            - task_key: ingest_users
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.gh_sdp_medallion.id}
+
+  pipelines:
+    gh_sdp_medallion:
+      name: gh_sdp_medallion
+      catalog: workspace
+      schema: gh_dev_bundle
+
+      serverless: true
+      development: true
+
+
+      channel: CURRENT
+
+      libraries:
+        # Core medallion pipeline
+        # Bronze layer
+        - notebook:
+            path: ./notebooks/pipeline/02_SDP_Bronze.py
+        - notebook:
+            path: ./notebooks/pipeline/10_SDP_Bronze_Repos.py
+        - notebook:
+            path: ./notebooks/pipeline/11_SDP_Bronze_Users.py
+        # Silver layer    
+        - notebook:
+            path: ./notebooks/pipeline/03_SDP_Silver.py
+        - notebook:
+            path: ./notebooks/pipeline/12_SDP_Silver_Repos.py
+        - notebook:
+            path: ./notebooks/pipeline/13_SDP_Silver_Users.py
+        # Gold layer
+        - notebook:
+            path: ./notebooks/pipeline/04_SDP_Gold.py
+        # Final enriched gold layer
+        - notebook:
+            path: ./notebooks/pipeline/14_SDP_Gold_Enriched.py
+      configuration:
+        raw_data_path: /Volumes/workspace/gh_dev/raw/
+        raw_repos_path: /Volumes/workspace/gh_dev/raw/repos/
+        raw_users_path: /Volumes/workspace/gh_dev/raw/users/
+
+        bronze_schema_path: /Volumes/workspace/gh_dev/schemas/bronze/
+        bronze_repos_schema_path: /Volumes/workspace/gh_dev/schemas/bronze_repos/
+        bronze_users_schema_path: /Volumes/workspace/gh_dev/schemas/bronze_users/
+
